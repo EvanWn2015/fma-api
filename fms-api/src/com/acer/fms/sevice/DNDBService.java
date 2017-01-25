@@ -48,17 +48,8 @@ public class DNDBService {
 		// ScalarAttributeType.S 代表字符串
 		Table table = dynamoDB.createTable(tableName,
 				Arrays.asList(new KeySchemaElement(DNDBConstants.PACKID, KeyType.HASH),
-						new KeySchemaElement(DNDBConstants.TIMESTAMP, KeyType.RANGE),
-						new KeySchemaElement(DNDBConstants.VOLTAGE, KeyType.RANGE),
-						new KeySchemaElement(DNDBConstants.CURRENT, KeyType.HASH),
-						new KeySchemaElement(DNDBConstants.SOC, KeyType.HASH),
-						new KeySchemaElement(DNDBConstants.SOH, KeyType.HASH),
-						new KeySchemaElement(DNDBConstants.TEMPERATURE, KeyType.HASH),
-						new KeySchemaElement(DNDBConstants.ALERT, KeyType.HASH),
-						new KeySchemaElement(DNDBConstants.LATITUDE, KeyType.HASH),
-						new KeySchemaElement(DNDBConstants.LONGITUDE, KeyType.HASH),
-						new KeySchemaElement(DNDBConstants.SPEED, KeyType.HASH)),
-				Arrays.asList(new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.N),
+						new KeySchemaElement(DNDBConstants.TIMESTAMP, KeyType.RANGE)),
+				Arrays.asList(new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.S),
 						new AttributeDefinition(DNDBConstants.TIMESTAMP, ScalarAttributeType.N),
 						new AttributeDefinition(DNDBConstants.VOLTAGE, ScalarAttributeType.N),
 						new AttributeDefinition(DNDBConstants.CURRENT, ScalarAttributeType.N),
@@ -89,8 +80,12 @@ public class DNDBService {
 	public String createTable(String tableName) throws InterruptedException {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.createTable(tableName,
-				Arrays.asList(new KeySchemaElement(DNDBConstants.PACKID, KeyType.HASH)),
-				Arrays.asList(new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.N)),
+				Arrays.asList(
+						new KeySchemaElement(DNDBConstants.PACKID, KeyType.HASH),
+						new KeySchemaElement(DNDBConstants.TIMESTAMP, KeyType.RANGE)),
+				Arrays.asList(
+						new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.N),
+						new AttributeDefinition(DNDBConstants.TIMESTAMP, ScalarAttributeType.N)),
 				new ProvisionedThroughput(10L, 10L));
 		table.waitForActive();
 		System.out.println("Success.  Table status: " + table.getDescription().getTableStatus());
@@ -133,7 +128,7 @@ public class DNDBService {
 	// 成功
 	public void insert(String tableName, PayloadVo payloadVo) throws InterruptedException, NullPointerException {
 		Map<String, Object> infoMap = new HashMap<String, Object>();
-		infoMap.put(DNDBConstants.TIMESTAMP, payloadVo.getTimestamp());
+//		infoMap.put(DNDBConstants.TIMESTAMP, payloadVo.getTimestamp());
 		infoMap.put(DNDBConstants.VOLTAGE, payloadVo.getVoltage());
 		infoMap.put(DNDBConstants.CURRENT, payloadVo.getCurrent());
 		infoMap.put(DNDBConstants.SOC, payloadVo.getSoc());
@@ -146,8 +141,21 @@ public class DNDBService {
 
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
-		PutItemOutcome outcome = table.putItem(
-				new Item().withPrimaryKey(DNDBConstants.PACKID, payloadVo.getPackId()).withMap(DNDBConstants.INFO, infoMap));
+		PutItemOutcome outcome = table.putItem(new Item()
+				.withPrimaryKey(DNDBConstants.PACKID, payloadVo.getPackId())
+				.withPrimaryKey(DNDBConstants.TIMESTAMP, payloadVo.getTimestamp())
+//				.with(DNDBConstants.VOLTAGE, payloadVo.getVoltage())
+//				.with(DNDBConstants.CURRENT, payloadVo.getCurrent())
+//				.with(DNDBConstants.SOC, payloadVo.getSoc())
+//				.with(DNDBConstants.SOH, payloadVo.getSoh())
+//				.with(DNDBConstants.TEMPERATURE, payloadVo.getTemperature())
+//				.with(DNDBConstants.ALERT, payloadVo.getAlert())
+//				.with(DNDBConstants.LATITUDE, payloadVo.getLatitude())
+//				.with(DNDBConstants.LONGITUDE, payloadVo.getLongitude())
+//				.with(DNDBConstants.SPEED, payloadVo.getSpeed()));
+//			
+				.withMap(DNDBConstants.INFO, infoMap));
+		System.out.print(outcome);
 
 	}
 
@@ -187,29 +195,28 @@ public class DNDBService {
 	public ArrayList<PayloadDto> findByPackId(String tableName, Long packId) {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
-		GetItemSpec spec = new GetItemSpec()
-				.withPrimaryKey(DNDBConstants.PACKID, packId);
+		GetItemSpec spec = new GetItemSpec().withPrimaryKey(DNDBConstants.PACKID, packId);
 		Item outcome = table.getItem(spec);
 
 		System.out.println("GetItem succeeded: " + outcome);
 
 		ArrayList<PayloadDto> dtoList = new ArrayList<PayloadDto>();
-//		while (iterator.hasNext()) {
-//			item = iterator.next();
-//			PayloadDto dto = new PayloadDto();
-//			dto.setPackId(item.getLong(DNDBConstants.PACKID));
-//			dto.setTimestamp(item.getLong(DNDBConstants.TIMESTAMP));
-//			dto.setVoltage(item.getDouble(DNDBConstants.VOLTAGE));
-//			dto.setCurrent(item.getDouble(DNDBConstants.CURRENT));
-//			dto.setSoc(item.getInt(DNDBConstants.SOC));
-//			dto.setSoh(item.getInt(DNDBConstants.SOH));
-//			dto.setTemperature(item.getInt(DNDBConstants.TEMPERATURE));
-//			dto.setAlert(item.getString(DNDBConstants.ALERT));
-//			dto.setLatitude(item.getDouble(DNDBConstants.LATITUDE));
-//			dto.setLongitude(item.getDouble(DNDBConstants.LONGITUDE));
-//			dto.setSpeed(item.getInt(DNDBConstants.SPEED));
-//			dtoList.add(dto);
-//		}
+		// while (iterator.hasNext()) {
+		// item = iterator.next();
+		// PayloadDto dto = new PayloadDto();
+		// dto.setPackId(item.getLong(DNDBConstants.PACKID));
+		// dto.setTimestamp(item.getLong(DNDBConstants.TIMESTAMP));
+		// dto.setVoltage(item.getDouble(DNDBConstants.VOLTAGE));
+		// dto.setCurrent(item.getDouble(DNDBConstants.CURRENT));
+		// dto.setSoc(item.getInt(DNDBConstants.SOC));
+		// dto.setSoh(item.getInt(DNDBConstants.SOH));
+		// dto.setTemperature(item.getInt(DNDBConstants.TEMPERATURE));
+		// dto.setAlert(item.getString(DNDBConstants.ALERT));
+		// dto.setLatitude(item.getDouble(DNDBConstants.LATITUDE));
+		// dto.setLongitude(item.getDouble(DNDBConstants.LONGITUDE));
+		// dto.setSpeed(item.getInt(DNDBConstants.SPEED));
+		// dtoList.add(dto);
+		// }
 		return dtoList;
 	}
 
