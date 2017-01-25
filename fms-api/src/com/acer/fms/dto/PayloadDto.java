@@ -5,7 +5,8 @@ import java.io.Serializable;
 public class PayloadDto implements Serializable {
 	private static final long serialVersionUID = -6679211119986134769L;
 	
-	private Long packId;
+	private String tableName;
+	private String packId;
 	private Long timestamp;
 	private double voltage;
 	private double current;
@@ -19,12 +20,20 @@ public class PayloadDto implements Serializable {
 
 	public PayloadDto() {
 	}
+	
+	public String getTableName() {
+		return tableName;
+	}
 
-	public Long getPackId() {
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	public String getPackId() {
 		return packId;
 	}
 
-	public void setPackId(Long packId) {
+	public void setPackId(String packId) {
 		this.packId = packId;
 	}
 

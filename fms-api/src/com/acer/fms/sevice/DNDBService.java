@@ -1,11 +1,8 @@
 package com.acer.fms.sevice;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import com.acer.fms.constants.DNDBConstants;
 import com.acer.fms.dto.PayloadDto;
@@ -13,14 +10,11 @@ import com.acer.fms.dto.TableInfoDto;
 import com.acer.fms.vo.PayloadVo;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.ItemCollection;
 import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
-import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.TableCollection;
 import com.amazonaws.services.dynamodbv2.document.UpdateItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
-import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
@@ -40,6 +34,10 @@ public class DNDBService {
 			DNDBSERVICE = new DNDBService();
 		}
 		return DNDBSERVICE;
+	}
+	
+	public void createTable3(String tableName) throws InterruptedException {
+		
 	}
 
 	public String createTable2(String tableName) throws InterruptedException {
@@ -80,12 +78,12 @@ public class DNDBService {
 	public String createTable(String tableName) throws InterruptedException {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.createTable(tableName,
-				Arrays.asList(
-						new KeySchemaElement(DNDBConstants.PACKID, KeyType.HASH),
-						new KeySchemaElement(DNDBConstants.TIMESTAMP, KeyType.RANGE)),
-				Arrays.asList(
-						new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.N),
-						new AttributeDefinition(DNDBConstants.TIMESTAMP, ScalarAttributeType.N)),
+				Arrays.asList(new KeySchemaElement(DNDBConstants.PACKID, KeyType.HASH)),
+				// new KeySchemaElement(DNDBConstants.TIMESTAMP,
+				// KeyType.RANGE)),
+				Arrays.asList(new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.S)),
+				// new AttributeDefinition(DNDBConstants.TIMESTAMP,
+				// ScalarAttributeType.N)),
 				new ProvisionedThroughput(10L, 10L));
 		table.waitForActive();
 		System.out.println("Success.  Table status: " + table.getDescription().getTableStatus());
@@ -112,6 +110,7 @@ public class DNDBService {
 		}
 	}
 
+	// 成功
 	public TableInfoDto getTableInfo(String tableName) throws ResourceNotFoundException {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		TableDescription td = dynamoDB.getTable(tableName).describe();
@@ -127,36 +126,19 @@ public class DNDBService {
 
 	// 成功
 	public void insert(String tableName, PayloadVo payloadVo) throws InterruptedException, NullPointerException {
-		Map<String, Object> infoMap = new HashMap<String, Object>();
-//		infoMap.put(DNDBConstants.TIMESTAMP, payloadVo.getTimestamp());
-		infoMap.put(DNDBConstants.VOLTAGE, payloadVo.getVoltage());
-		infoMap.put(DNDBConstants.CURRENT, payloadVo.getCurrent());
-		infoMap.put(DNDBConstants.SOC, payloadVo.getSoc());
-		infoMap.put(DNDBConstants.SOH, payloadVo.getSoh());
-		infoMap.put(DNDBConstants.TEMPERATURE, payloadVo.getTemperature());
-		infoMap.put(DNDBConstants.ALERT, payloadVo.getAlert());
-		infoMap.put(DNDBConstants.LATITUDE, payloadVo.getLatitude());
-		infoMap.put(DNDBConstants.LONGITUDE, payloadVo.getLongitude());
-		infoMap.put(DNDBConstants.SPEED, payloadVo.getSpeed());
-
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
-		PutItemOutcome outcome = table.putItem(new Item()
-				.withPrimaryKey(DNDBConstants.PACKID, payloadVo.getPackId())
-				.withPrimaryKey(DNDBConstants.TIMESTAMP, payloadVo.getTimestamp())
-//				.with(DNDBConstants.VOLTAGE, payloadVo.getVoltage())
-//				.with(DNDBConstants.CURRENT, payloadVo.getCurrent())
-//				.with(DNDBConstants.SOC, payloadVo.getSoc())
-//				.with(DNDBConstants.SOH, payloadVo.getSoh())
-//				.with(DNDBConstants.TEMPERATURE, payloadVo.getTemperature())
-//				.with(DNDBConstants.ALERT, payloadVo.getAlert())
-//				.with(DNDBConstants.LATITUDE, payloadVo.getLatitude())
-//				.with(DNDBConstants.LONGITUDE, payloadVo.getLongitude())
-//				.with(DNDBConstants.SPEED, payloadVo.getSpeed()));
-//			
-				.withMap(DNDBConstants.INFO, infoMap));
-		System.out.print(outcome);
 
+		PutItemOutcome outcome = table.putItem(new Item().withPrimaryKey(DNDBConstants.PACKID, payloadVo.getPackId())
+				.withPrimaryKey(DNDBConstants.TIMESTAMP, payloadVo.getTimestamp())
+				.with(DNDBConstants.VOLTAGE, payloadVo.getVoltage()).with(DNDBConstants.CURRENT, payloadVo.getCurrent())
+				.with(DNDBConstants.SOC, payloadVo.getSoc()).with(DNDBConstants.SOH, payloadVo.getSoh())
+				.with(DNDBConstants.TEMPERATURE, payloadVo.getTemperature())
+				.with(DNDBConstants.ALERT, payloadVo.getAlert()).with(DNDBConstants.LATITUDE, payloadVo.getLatitude())
+				.with(DNDBConstants.LONGITUDE, payloadVo.getLongitude())
+				.with(DNDBConstants.SPEED, payloadVo.getSpeed()));
+
+		System.out.print(outcome.getItem().toJSONPretty());
 	}
 
 	public PayloadDto find(String tableName, PayloadVo payloadVo) throws InterruptedException {
@@ -177,7 +159,7 @@ public class DNDBService {
 
 		Item outcome = table.getItem(spec);
 		PayloadDto dto = new PayloadDto();
-		dto.setPackId((Long) outcome.get(DNDBConstants.PACKID));
+		dto.setPackId((String)outcome.get(DNDBConstants.PACKID));
 		dto.setTimestamp((Long) outcome.get(DNDBConstants.TIMESTAMP));
 		dto.setVoltage((Double) outcome.get(DNDBConstants.VOLTAGE));
 		dto.setCurrent((Double) outcome.get(DNDBConstants.CURRENT));
@@ -192,32 +174,31 @@ public class DNDBService {
 		return dto;
 	}
 
-	public ArrayList<PayloadDto> findByPackId(String tableName, Long packId) {
+	public PayloadDto findByPackId(String tableName, Long packId) {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
 		GetItemSpec spec = new GetItemSpec().withPrimaryKey(DNDBConstants.PACKID, packId);
+
 		Item outcome = table.getItem(spec);
 
 		System.out.println("GetItem succeeded: " + outcome);
 
-		ArrayList<PayloadDto> dtoList = new ArrayList<PayloadDto>();
-		// while (iterator.hasNext()) {
-		// item = iterator.next();
-		// PayloadDto dto = new PayloadDto();
-		// dto.setPackId(item.getLong(DNDBConstants.PACKID));
-		// dto.setTimestamp(item.getLong(DNDBConstants.TIMESTAMP));
-		// dto.setVoltage(item.getDouble(DNDBConstants.VOLTAGE));
-		// dto.setCurrent(item.getDouble(DNDBConstants.CURRENT));
-		// dto.setSoc(item.getInt(DNDBConstants.SOC));
-		// dto.setSoh(item.getInt(DNDBConstants.SOH));
-		// dto.setTemperature(item.getInt(DNDBConstants.TEMPERATURE));
-		// dto.setAlert(item.getString(DNDBConstants.ALERT));
-		// dto.setLatitude(item.getDouble(DNDBConstants.LATITUDE));
-		// dto.setLongitude(item.getDouble(DNDBConstants.LONGITUDE));
-		// dto.setSpeed(item.getInt(DNDBConstants.SPEED));
-		// dtoList.add(dto);
-		// }
-		return dtoList;
+		PayloadDto dto = new PayloadDto();
+		
+		dto.setTableName(tableName);
+		dto.setPackId(outcome.getJSON(DNDBConstants.PACKID));
+		dto.setTimestamp(Long.parseLong(outcome.getJSON(DNDBConstants.PACKID)));
+		dto.setVoltage(Double.parseDouble(outcome.getJSON(DNDBConstants.VOLTAGE)));
+		dto.setCurrent(Double.parseDouble(outcome.getJSON(DNDBConstants.CURRENT)));
+		dto.setSoc(Integer.parseInt(outcome.getJSON(DNDBConstants.SOC)));
+		dto.setSoh(Integer.parseInt(outcome.getJSON(DNDBConstants.SOH)));
+		dto.setTemperature(Integer.parseInt(outcome.getJSON(DNDBConstants.TEMPERATURE)));
+		dto.setAlert(outcome.getJSON(DNDBConstants.ALERT));
+		dto.setLatitude(Double.parseDouble(outcome.getJSON(DNDBConstants.LATITUDE)));
+		dto.setLongitude(Double.parseDouble(outcome.getJSON(DNDBConstants.LONGITUDE)));
+		dto.setSpeed(Integer.parseInt(outcome.getJSON(DNDBConstants.SPEED)));
+
+		return dto;
 	}
 
 	public void update(String tableName, PayloadVo payloadVo) throws InterruptedException, NullPointerException {

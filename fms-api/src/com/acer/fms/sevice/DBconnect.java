@@ -3,7 +3,7 @@ package com.acer.fms.sevice;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 
-public class DBconnect {
+public class DBconnect  {
 	private static DBconnect DBCONNECT;
 	private static String DBURL = "http://localhost:8000";
 
