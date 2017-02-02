@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="fms-api">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../../../Applications/Eclipse.app/Contents/Eclipse/"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="AWS SDK for Java.libraryclasspath">
+        <pathelement location="../../../../aws-java-sdk/1.11.83/lib/aws-java-sdk-1.11.83.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/aspectjrt-1.8.2.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/aspectjweaver.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/commons-codec-1.9.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/commons-logging-1.1.3.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/freemarker-2.3.9.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/httpclient-4.5.2.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/httpcore-4.4.4.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/ion-java-1.0.1.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/jackson-annotations-2.6.0.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/jackson-core-2.6.6.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/jackson-databind-2.6.6.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/jackson-dataformat-cbor-2.6.6.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/javax.mail-api-1.4.6.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/jmespath-java-1.11.83.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/joda-time-2.8.1.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/spring-beans-3.0.7.RELEASE.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/spring-context-3.0.7.RELEASE.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/spring-core-3.0.7.RELEASE.jar"/>
+        <pathelement location="../../../../aws-java-sdk/1.11.83/third-party/lib/spring-test-3.0.7.RELEASE.jar"/>
+    </path>
+    <path id="Maven Dependencies.libraryclasspath">
+        <pathelement location="../../../../.m2/repository/com/fasterxml/jackson/core/jackson-core/2.7.0/jackson-core-2.7.0.jar"/>
+        <pathelement location="../../../../.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.1.4/jackson-databind-2.1.4.jar"/>
+        <pathelement location="../../../../.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.1.4/jackson-annotations-2.1.4.jar"/>
+        <pathelement location="../../../../.m2/repository/com/fasterxml/jackson-xml-databind/0.6.2/jackson-xml-databind-0.6.2.jar"/>
+        <pathelement location="../../../../.m2/repository/org/codehaus/jackson/jackson-mapper-asl/1.9.2/jackson-mapper-asl-1.9.2.jar"/>
+        <pathelement location="../../../../.m2/repository/org/codehaus/jackson/jackson-core-asl/1.9.2/jackson-core-asl-1.9.2.jar"/>
+        <pathelement location="../../../../.m2/repository/org/codehaus/jackson/jackson-xc/1.9.2/jackson-xc-1.9.2.jar"/>
+        <pathelement location="../../../../.m2/repository/org/codehaus/woodstox/stax2-api/3.1.0/stax2-api-3.1.0.jar"/>
+        <pathelement location="../../../../.m2/repository/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar"/>
+        <pathelement location="../../../../.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"/>
+        <pathelement location="../../../../.m2/repository/org/apache/httpcomponents/httpclient/4.5.2/httpclient-4.5.2.jar"/>
+        <pathelement location="../../../../.m2/repository/org/apache/httpcomponents/httpcore/4.4.4/httpcore-4.4.4.jar"/>
+        <pathelement location="../../../../.m2/repository/commons-codec/commons-codec/1.9/commons-codec-1.9.jar"/>
+    </path>
+    <path id="EAR Libraries.libraryclasspath"/>
+    <path id="Apache Tomcat v8.5 [Apache Tomcat v8.5].libraryclasspath">
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/annotations-api.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/catalina-ant.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/catalina-ha.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/catalina-storeconfig.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/catalina-tribes.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/catalina.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/ecj-4.5.1.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/el-api.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/jasper-el.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/jasper.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/jaspic-api.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/jsp-api.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/servlet-api.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-api.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-coyote.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-dbcp.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-i18n-es.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-i18n-fr.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-i18n-ja.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-jdbc.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-jni.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-util-scan.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-util.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/tomcat-websocket.jar"/>
+        <pathelement location="../../../../../../usr/local/apache-tomcat-8.5.11/lib/websocket-api.jar"/>
+    </path>
+    <path id="fms-api.classpath">
+        <pathelement location="target/classes"/>
+        <path refid="AWS SDK for Java.libraryclasspath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+        <path refid="EAR Libraries.libraryclasspath"/>
+        <path refid="Apache Tomcat v8.5 [Apache Tomcat v8.5].libraryclasspath"/>
+    </path>
+    <path id="run.Test.classpath">
+        <path refid="fms-api.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="target/classes"/>
+        <copy includeemptydirs="false" todir="target/classes">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="target/classes"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="target/classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="fms-api.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="Test">
+        <java classname="api.fms.test.Test" failonerror="true" fork="yes">
+            <classpath refid="run.Test.classpath"/>
+        </java>
+    </target>
+</project>
