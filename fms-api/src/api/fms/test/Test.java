@@ -2,8 +2,8 @@ package api.fms.test;
 
 import java.util.ArrayList;
 
+import api.fms.dao.PayloadDao;
 import api.fms.dto.PayloadDto;
-import api.fms.server.DNDBService;
 import api.fms.vo.PayloadVo;
 
 public class Test {
@@ -20,7 +20,7 @@ public class Test {
 	
 		PayloadVo payloadVo = new PayloadVo("22");
 		try {
-			DNDBService.getInstance().insert("testTable", payloadVo);
+			PayloadDao.getInstance().insert("testTable", payloadVo);
 		} catch (NullPointerException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

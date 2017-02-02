@@ -5,6 +5,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans   
     http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="dNDBService" class="api.fms.server.DNDBService" />
+	<bean id="dnTableService" class="api.fms.server.DnTableService" />
+	<bean id="payloadService" class="api.fms.server.PayloadService" />
 
 </beans>

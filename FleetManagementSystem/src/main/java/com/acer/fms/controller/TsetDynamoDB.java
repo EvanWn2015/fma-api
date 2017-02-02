@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.acer.fms.util.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import api.fms.dto.PayloadDto;
-import api.fms.server.DNDBService;
+import api.fms.server.DnTableService;
+import api.fms.server.PayloadService;
 import api.fms.vo.PayloadVo;
 
 @Controller
@@ -22,7 +23,10 @@ public class TsetDynamoDB {
 	static final Logger LOG = LoggerFactory.getLogger(TsetDynamoDB.class);
 
 	@Autowired
-	DNDBService dNDBService;
+	DnTableService dnTableService;
+	
+	@Autowired
+	PayloadService payloadService;
 
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	public String init() {
@@ -33,11 +37,10 @@ public class TsetDynamoDB {
 	@RequestMapping(value = "/createTable", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public String createTable(Model model) {
-		LOG.info("createTable : {}", "in");
 		try {
-			dNDBService.createTable("testTable");
+			dnTableService.createTable("testTable");
 		} catch (InterruptedException e) {
-			LOG.info("createTable : {}", e);
+			LOG.info("createTable : {}", e.getMessage());
 		}
 		return "tsetDynamoDB";
 	}
@@ -45,10 +48,9 @@ public class TsetDynamoDB {
 	@RequestMapping(value = "/putItem", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public String putItem() {
-		LOG.info("~~ putItem ~~");
 		PayloadVo payloadVo = new PayloadVo("22");
 		try {
-			dNDBService.insert("testTable", payloadVo);
+			payloadService.insert("testTable", payloadVo);
 		} catch (NullPointerException | InterruptedException e) {
 			LOG.info("createTable : {}", e.getMessage());
 		}
@@ -58,11 +60,9 @@ public class TsetDynamoDB {
 	@RequestMapping(value = "/query", method = RequestMethod.POST)
 	@ResponseBody
 	public String query() {
-		LOG.info("~~ query ~~");
-		PayloadDto dto = dNDBService.findByPackId("testTable", "22");
-		ObjectMapper objectMapper = new ObjectMapper();
+		PayloadDto dto = payloadService.findByPackId("testTable", "22");
 		try {
-			LOG.info("PayloadDto : {}", objectMapper.writeValueAsString(dto));
+			LOG.info("PayloadDto : {}", Util.getInstance().toJSon(dto));
 		} catch (JsonProcessingException e) {
 			LOG.info("createTable : {}", e.getMessage());
 		}
@@ -72,12 +72,10 @@ public class TsetDynamoDB {
 	@RequestMapping(value = "/deleteTable", method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteTable() {
-		LOG.info("~~ delete ~~");
 		try {
-			dNDBService.deleteTable("testTable");
+			dnTableService.deleteTable("test");
 		} catch (InterruptedException e) {
-			LOG.error("createTable : {}", e);
-			e.printStackTrace();
+			LOG.info("createTable : {}", e.getMessage());
 		}
 		return "deleteTable";
 	}
