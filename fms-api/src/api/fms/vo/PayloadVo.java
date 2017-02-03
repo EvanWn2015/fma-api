@@ -16,19 +16,13 @@ public class PayloadVo implements Serializable {
 	private double latitude;
 	private double longitude;
 	private Integer speed;
+	
+	public PayloadVo (){
+		
+	}
 
 	public PayloadVo(String packId) {
 		this.packId = packId;
-		this.timestamp = 1L;
-		this.voltage = 1.0;
-		this.current = 1.0;
-		this.soc = 1;
-		this.soh = 1;
-		this.temperature = 1;
-		this.alert = "1";
-		this.latitude = 1.1;
-		this.longitude = 1.1;
-		this.speed = 1;
 	}
 
 	public String getPackId() {

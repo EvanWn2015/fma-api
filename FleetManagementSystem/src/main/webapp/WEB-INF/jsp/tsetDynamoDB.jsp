@@ -19,6 +19,8 @@
 	<div class="starter-template">
 		<button type="button" class="btn btn-danger">Create</button>
 		<button type="button" class="btn btn-info">PutItem</button>
+		<button type="button" class="btn btn-default">PutItem2</button>
+		<button type="button" class="btn btn-primary">Get Count</button>
 		<button type="button" class="btn btn-success">Query</button>
 		<button type="button" class="btn btn-warning">DeleteTable</button>
 	</div>
@@ -38,6 +40,10 @@ function bindBtnEvent() {
 		click:putItem
 	})
 	
+	$('.btn-default').bind({
+		click:putItem2
+	})
+	
 	$('.btn-success').bind({
 		click:query
 	})
@@ -45,7 +51,11 @@ function bindBtnEvent() {
 	$('.btn-warning').bind({
 		click:deleteTable
 	})
-	 
+	
+	$('.btn-primary').bind({
+		click:getCount
+	})
+	
 }
 
 
@@ -57,7 +67,7 @@ function createTable (){
         dataType:'text',
         success: function(data){
             console.log(data);
-            console.log(data.data);
+            alert('createTable status : ' + data);
         }
     });
 }
@@ -70,6 +80,20 @@ function putItem (){
         dataType:'text',
         success: function(data){
             console.log(data);
+            alert('putItem status : ' + data);
+        }
+    });
+}
+
+function putItem2 (){
+	console.log('..........putItem2.......');
+	$.ajax({
+        url: 'putItem2.do',
+        type:"POST",
+        dataType:'text',
+        success: function(data){
+            console.log(data);
+            alert('putItem2 status : ' + data);
         }
     });
 }
@@ -79,9 +103,10 @@ function query (){
 	$.ajax({
         url: 'query.do',
         type:"POST",
-        dataType:'text',
+        dataType: "json",
         success: function(data){
             console.log(data);
+            alert('query data : ' + data);
         }
     });
 }
@@ -94,6 +119,20 @@ function deleteTable (){
         dataType:'text',
         success: function(data){
             console.log(data);
+            alert('delete status : ' + data);
+        }
+    });
+}
+
+function getCount (){
+	console.log('..........getCount.......');
+	$.ajax({
+        url: 'getCount.do',
+        type:"POST",
+        dataType:'text',
+        success: function(data){
+            console.log(data);
+            alert('getCount : ' + data);
         }
     });
 }

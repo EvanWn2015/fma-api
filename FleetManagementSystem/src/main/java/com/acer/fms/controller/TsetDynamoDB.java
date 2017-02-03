@@ -1,10 +1,11 @@
 package com.acer.fms.controller;
 
+import java.util.Random;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,7 +25,7 @@ public class TsetDynamoDB {
 
 	@Autowired
 	DnTableService dnTableService;
-	
+
 	@Autowired
 	PayloadService payloadService;
 
@@ -35,49 +36,103 @@ public class TsetDynamoDB {
 	}
 
 	@RequestMapping(value = "/createTable", method = RequestMethod.POST, produces = "application/json")
-	@ResponseBody
-	public String createTable(Model model) {
+	public @ResponseBody String createTable() {
+		String status = "";
 		try {
-			dnTableService.createTable("testTable");
+			status = dnTableService.createTable("testTable");
+			LOG.info("createTable : {}", status);
 		} catch (InterruptedException e) {
 			LOG.info("createTable : {}", e.getMessage());
 		}
-		return "tsetDynamoDB";
+		return status;
 	}
 
 	@RequestMapping(value = "/putItem", method = RequestMethod.POST, produces = "application/json")
-	@ResponseBody
-	public String putItem() {
-		PayloadVo payloadVo = new PayloadVo("22");
+	public @ResponseBody String putItem() {
+		String tableName = "testTable";
+		PayloadVo payloadVo = setTestPayloadVo("22");
+		String status = "fail";
 		try {
-			payloadService.insert("testTable", payloadVo);
+			payloadService.insert(tableName, payloadVo);
+			status = "success";
 		} catch (NullPointerException | InterruptedException e) {
 			LOG.info("createTable : {}", e.getMessage());
 		}
-		return "putItem";
+		return status;
+	}
+
+	@RequestMapping(value = "/putItem2", method = RequestMethod.POST, produces = "application/json")
+	public @ResponseBody String putItem2() {
+		String tableName = "testTable";
+		PayloadVo payloadVo = setTestPayloadVo(null);
+		String status = "fail";
+		try {
+			payloadService.insert(tableName, payloadVo);
+			status = "success";
+		} catch (NullPointerException | InterruptedException e) {
+			LOG.info("createTable : {}", e.getMessage());
+		}
+		return status;
 	}
 
 	@RequestMapping(value = "/query", method = RequestMethod.POST)
-	@ResponseBody
-	public String query() {
-		PayloadDto dto = payloadService.findByPackId("testTable", "22");
+	public @ResponseBody PayloadDto query() {
+		String tableName = "testTable";
+		PayloadDto dto = payloadService.findByPackId(tableName, "22");
 		try {
 			LOG.info("PayloadDto : {}", Util.getInstance().toJSon(dto));
 		} catch (JsonProcessingException e) {
 			LOG.info("createTable : {}", e.getMessage());
 		}
-		return "query";
+		return dto;
 	}
 
 	@RequestMapping(value = "/deleteTable", method = RequestMethod.POST)
-	@ResponseBody
-	public String deleteTable() {
+	public @ResponseBody String deleteTable() {
+		String tableName = "testTable";
+		String status = "";
 		try {
-			dnTableService.deleteTable("test");
+			 status = dnTableService.deleteTable(tableName);
+			LOG.info("deleteTable : {}", status);
 		} catch (InterruptedException e) {
-			LOG.info("createTable : {}", e.getMessage());
+			LOG.info("deleteTable : {}", e.getMessage());
 		}
-		return "deleteTable";
+		return status;
+	}
+
+	@RequestMapping(value = "/getCount", method = RequestMethod.POST)
+	public @ResponseBody Integer getCount() {
+		int count = dnTableService.getTablesCount();
+		LOG.info("getCount : {}", count);
+		return count;
+	}
+
+	/**
+	 * TEST DATA
+	 * 
+	 * @return
+	 */
+	private PayloadVo setTestPayloadVo(String packId) {
+
+		Random random = new Random();
+		PayloadVo payloadVo = new PayloadVo();
+
+		payloadVo.setPackId(random.nextInt() + "ID");
+		if (packId != null) {
+			payloadVo.setPackId(packId);
+		}
+		payloadVo.setTimestamp(random.nextLong());
+		payloadVo.setVoltage(random.nextDouble());
+		payloadVo.setCurrent(random.nextDouble());
+		payloadVo.setSoc(random.nextInt());
+		payloadVo.setSoh(random.nextInt());
+		payloadVo.setTemperature(random.nextInt());
+		payloadVo.setAlert(random.nextInt() + "test");
+		payloadVo.setLatitude(random.nextDouble());
+		payloadVo.setLongitude(random.nextDouble());
+		payloadVo.setSpeed(random.nextInt());
+
+		return payloadVo;
 	}
 
 }

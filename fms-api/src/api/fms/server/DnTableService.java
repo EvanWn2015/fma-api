@@ -36,12 +36,11 @@ public class DnTableService {
 			Table table = dynamoDB.createTable(tableName,
 					Arrays.asList(new KeySchemaElement(DNDBConstants.PACKID, KeyType.HASH)),
 					Arrays.asList(new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.S)),
-					new ProvisionedThroughput(10L, 10L));
+					new ProvisionedThroughput(5L, 5L));
 			table.waitForActive();
+			return "success";
 		}
-		TableDescription tableDescription = dynamoDB.getTable(tableName).describe();
-		System.out.println(tableDescription.getTableStatus());
-		return tableDescription.getTableStatus();
+		return "fail";
 	}
 
 	/**
@@ -69,8 +68,7 @@ public class DnTableService {
 	 * 
 	 * @return
 	 */
-	public static Integer getTablesCount() {
-
+	public Integer getTablesCount() {
 		TableCollection<ListTablesResult> tables = DBconnect.getInstance().getDynamoDB().listTables();
 		Iterator<Table> iterator = tables.iterator();
 
@@ -106,6 +104,23 @@ public class DnTableService {
 	}
 
 	/**
+	 * 刪除 Table
+	 * 
+	 * @param tableName
+	 * @throws InterruptedException
+	 */
+	public String deleteTable(String tableName) throws InterruptedException {
+		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
+		if (checkRepeatTable(tableName)){
+			Table table = dynamoDB.getTable(tableName);
+			table.delete();
+			table.waitForDelete();
+			return "success";
+		}
+		return "fail";
+	}
+	
+	/**
 	 * 檢查是否有重複 Table
 	 * @param tableName
 	 * @return
@@ -121,19 +136,12 @@ public class DnTableService {
 		}
 		return status;
 	}
-
-	/**
-	 * 刪除 Table
-	 * 
-	 * @param tableName
-	 * @throws InterruptedException
-	 */
-	public void deleteTable(String tableName) throws InterruptedException {
-		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
-		if (checkRepeatTable(tableName)){
-			Table table = dynamoDB.getTable(tableName);
-			table.delete();
-			table.waitForDelete();
-		}
-	}
+	
+	
+//	private String getTableStatus(String tableName){
+//		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
+//		TableDescription td = dynamoDB.getTable(tableName).describe();
+//		System.out.println(td.getTableName());
+//		return td.getTableStatus();
+//	}
 }
