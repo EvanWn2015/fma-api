@@ -21,7 +21,7 @@ public class DBconnect  {
 	public DynamoDB getDynamoDB() {
 		// Cloud
 //		AmazonDynamoDBClient client = new AmazonDynamoDBClient(new ProfileCredentialsProvider());
-		// Local
+		// Local 
 //		AmazonDynamoDBClient client = new AmazonDynamoDBClient().withEndpoint(DBURL);
 		
 		// This client will default to US West (Oregon)
