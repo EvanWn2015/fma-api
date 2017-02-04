@@ -113,5 +113,21 @@ public class PayloadDto implements Serializable {
 		return serialVersionUID;
 	}
 
+	@Override  
+    public String toString() {  
+        return "PayloadDto ["
+    			+"packId=" + packId 
+        		+ ", timestamp=" + timestamp 
+        		+ ", voltage=" + voltage 
+        		+ ", current=" + current 
+        		+ ", soc=" + soc 
+        		+ ", soh=" + soh 
+        		+ ", temperature=" + temperature 
+        		+ ", alert=" + alert 
+        		+ ", latitude=" + latitude 
+        		+ ", longitude=" + longitude 
+        		+ ", speed=" + speed 
+        		+ "]";  
+    }  
 	
 }

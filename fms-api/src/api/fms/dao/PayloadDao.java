@@ -1,21 +1,22 @@
 package api.fms.dao;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import com.amazonaws.services.dynamodbv2.document.DeleteItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemCollection;
 import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
+import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.dynamodbv2.document.spec.ScanSpec;
+import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
+import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 
 import api.fms.constants.DNDBConstants;
-import api.fms.dto.PayloadDto;
 import api.fms.server.DBconnect;
 import api.fms.vo.PayloadVo;
 
@@ -29,17 +30,17 @@ public class PayloadDao {
 		return PAYLOAD_DAO;
 	}
 
-	public void insert(String tableName, PayloadVo payloadVo) throws InterruptedException, NullPointerException {
+	public void putItemBytableNameAndPayloaVo(String tableName, PayloadVo payloadVo)
+			throws InterruptedException, NullPointerException {
+
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
-
-		Item item = new Item()
-				.withPrimaryKey(DNDBConstants.PACKID, payloadVo.getPackId())
+		
+		Item item = new Item().withPrimaryKey(DNDBConstants.PACKID, payloadVo.getPackId())
 				.withNumber(DNDBConstants.TIMESTAMP, payloadVo.getTimestamp())
 				.withNumber(DNDBConstants.VOLTAGE, payloadVo.getVoltage())
 				.withNumber(DNDBConstants.CURRENT, payloadVo.getCurrent())
-				.withNumber(DNDBConstants.SOC, payloadVo.getSoc())
-				.withNumber(DNDBConstants.SOH, payloadVo.getSoh())
+				.withNumber(DNDBConstants.SOC, payloadVo.getSoc()).withNumber(DNDBConstants.SOH, payloadVo.getSoh())
 				.withNumber(DNDBConstants.TEMPERATURE, payloadVo.getTemperature())
 				.withString(DNDBConstants.ALERT, payloadVo.getAlert())
 				.withNumber(DNDBConstants.LATITUDE, payloadVo.getLatitude())
@@ -49,7 +50,71 @@ public class PayloadDao {
 		table.putItem(item);
 	}
 
-	public List<PayloadDto> findAllItem(String tableName) {
+	/**
+	 * 依時間範圍 Filter TIMESTAMP 資料 
+	 * @param tableName
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public Iterator<Item> findItemIteratorByTimeRange(String tableName, Long startTime, Long endTime) {
+		System.out.println("startTime : " + startTime + "endTime : " + endTime);
+		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
+		Table table = dynamoDB.getTable(tableName);
+		
+		ValueMap valueMap = new ValueMap()
+				.withNumber(":start_tr", startTime)
+				.withNumber(":end_tr", endTime);
+		
+		ScanSpec scanSpec = new ScanSpec()
+				.withProjectionExpression(getProjectionExpression())
+				.withFilterExpression("#time_r between :start_tr and :end_tr")
+				.withNameMap(getNameMap())
+				.withValueMap(valueMap);
+
+		ItemCollection<ScanOutcome> items = null;
+		Iterator<Item> iterator = null;
+		try {
+			items = table.scan(scanSpec);
+			iterator = items.iterator();
+		} catch (Exception e) {
+			System.err.println("Unable to scan the table:");
+			System.err.println(e.getMessage());
+		}
+		return iterator;
+	}
+	
+	/**
+	 * 通用掃描條件
+	 * @param tableName 
+	 * @param filter ex:"#time_r < :start_tr"
+	 * @param valueMap ex: .withNumber(":start_tr", startTime) 
+	 * @return
+	 */
+	public Iterator<Item> scanItemIteratorByValueMapAndFilter(String tableName, String filter, ValueMap valueMap) {
+		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
+		Table table = dynamoDB.getTable(tableName);
+		
+		ScanSpec scanSpec = new ScanSpec()
+				.withProjectionExpression(getProjectionExpression())
+				.withFilterExpression(filter)
+				.withNameMap(getNameMap())
+				.withValueMap(valueMap);
+
+		ItemCollection<ScanOutcome> items = null;
+		Iterator<Item> iterator = null;
+		try {
+			items = table.scan(scanSpec);
+			iterator = items.iterator();
+		} catch (Exception e) {
+			System.err.println("Unable to scan the table:");
+			System.err.println(e.getMessage());
+		}
+		return iterator;
+	}
+
+	public Iterator<Item> findAllItemIterator(String tableName) {
+
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
 		QuerySpec querySpec = new QuerySpec();
@@ -57,65 +122,28 @@ public class PayloadDao {
 		ItemCollection<QueryOutcome> items = null;
 		Iterator<Item> iterator = null;
 
-//		List<Item> itemList = new ArrayList<Item>();
 		try {
 			items = table.query(querySpec);
 			iterator = items.iterator();
-//			while (iterator.hasNext()) {
-////				itemList.add(iterator.next());
-//			}
 		} catch (Exception e) {
 			System.err.println("Unable to query movies from 1985");
 			System.err.println(e.getMessage());
 		}
-		return setPayloadDtoListByIterator(iterator);
+		return iterator;
 	}
 
-	private List<PayloadDto> setPayloadDtoListByIterator(Iterator<Item> iterator) {
-		List<PayloadDto> payloadDtoList = new ArrayList<PayloadDto>();
-		while (iterator.hasNext()) {
-			Item item = iterator.next();
-			PayloadDto dto = new PayloadDto ();
-			dto.setPackId(item.getString(DNDBConstants.PACKID));
-			dto.setTimestamp(item.getLong(DNDBConstants.TIMESTAMP));
-			dto.setVoltage(item.getDouble(DNDBConstants.VOLTAGE));
-			dto.setCurrent(item.getDouble(DNDBConstants.CURRENT));
-			dto.setSoc(item.getInt(DNDBConstants.SOC));
-			dto.setSoh(item.getInt(DNDBConstants.SOH));
-			dto.setTemperature(item.getInt(DNDBConstants.TEMPERATURE));
-			dto.setAlert(item.getString(DNDBConstants.ALERT));
-			dto.setLatitude(item.getDouble(DNDBConstants.LATITUDE));
-			dto.setLongitude(item.getDouble(DNDBConstants.LONGITUDE));
-			dto.setSpeed(item.getInt(DNDBConstants.SPEED));
-			payloadDtoList.add(dto);
-		}
-		return payloadDtoList;
-	}
+	public Item findItemByPackId(String tableName, String packId) {
 
-	public PayloadDto findByPackId(String tableName, String packId) {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
 		GetItemSpec spec = new GetItemSpec().withPrimaryKey(DNDBConstants.PACKID, packId);
 
 		Item outcome = table.getItem(spec);
-
-		PayloadDto dto = new PayloadDto();
-		dto.setPackId(outcome.getString(DNDBConstants.PACKID));
-		dto.setTimestamp(outcome.getLong(DNDBConstants.TIMESTAMP));
-		dto.setVoltage(outcome.getDouble(DNDBConstants.VOLTAGE));
-		dto.setCurrent(outcome.getDouble(DNDBConstants.CURRENT));
-		dto.setSoc(outcome.getInt(DNDBConstants.SOC));
-		dto.setSoh(outcome.getInt(DNDBConstants.SOH));
-		dto.setTemperature(outcome.getInt(DNDBConstants.TEMPERATURE));
-		dto.setAlert(outcome.getString(DNDBConstants.ALERT));
-		dto.setLatitude(outcome.getDouble(DNDBConstants.LATITUDE));
-		dto.setLongitude(outcome.getDouble(DNDBConstants.LONGITUDE));
-		dto.setSpeed(outcome.getInt(DNDBConstants.SPEED));
-
-		return dto;
+		return outcome;
 	}
 
 	public void deleteItemByPackId(String tableName, String packId) {
+
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
 
@@ -124,7 +152,26 @@ public class PayloadDao {
 		// Check the response.
 		System.out.println("Printing item that was deleted...");
 		System.out.println(outcome.getItem().toJSONPretty());
-
 	}
-
+	
+	private NameMap getNameMap(){
+		NameMap nameMap = new NameMap()
+				.with(DNDBConstants.PACKID_R, DNDBConstants.PACKID)
+				.with(DNDBConstants.TIMESTAMP_R, DNDBConstants.TIMESTAMP)
+				.with(DNDBConstants.VOLTAGE_R, DNDBConstants.VOLTAGE)
+				.with(DNDBConstants.CURRENT_R, DNDBConstants.CURRENT)
+				.with(DNDBConstants.SOC_R, DNDBConstants.SOC)
+				.with(DNDBConstants.SOH_R, DNDBConstants.SOH)
+				.with(DNDBConstants.TEMPERATURE_R, DNDBConstants.TEMPERATURE)
+				.with(DNDBConstants.ALERT_R, DNDBConstants.ALERT)
+				.with(DNDBConstants.LATITUDE_R, DNDBConstants.LATITUDE)
+				.with(DNDBConstants.LONGITUDE_R, DNDBConstants.LONGITUDE)
+				.with(DNDBConstants.SPEED_R, DNDBConstants.SPEED);
+		return nameMap;
+	}
+	
+	private String getProjectionExpression(){
+		String projection = "#time_r, #id_r, #voltage_r, #current_r, #soc_r, #soh_r, #temp_r, #alert_r, #lat_r, #lon_r, #speed_r";
+		return projection ;
+	}
 }

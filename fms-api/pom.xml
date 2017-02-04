@@ -52,7 +52,12 @@
 			<artifactId>aws-java-sdk</artifactId>
 			<version>1.11.83</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>fms-common</groupId>
+			<artifactId>fms-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	
 	<profiles>

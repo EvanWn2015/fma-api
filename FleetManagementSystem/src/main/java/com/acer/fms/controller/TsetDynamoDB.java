@@ -1,5 +1,7 @@
 package com.acer.fms.controller;
 
+import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import org.slf4j.Logger;
@@ -10,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.acer.fms.util.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import api.fms.dto.PayloadDto;
 import api.fms.server.DnTableService;
 import api.fms.server.PayloadService;
 import api.fms.vo.PayloadVo;
+import fms.common.Util.Util;
 
 @Controller
 public class TsetDynamoDB {
@@ -76,13 +78,15 @@ public class TsetDynamoDB {
 	}
 
 	@RequestMapping(value = "/query", method = RequestMethod.POST)
-	public @ResponseBody PayloadDto query() {
+	public @ResponseBody PayloadDto query() throws JsonProcessingException {
 		String tableName = "testTable";
-		PayloadDto dto = payloadService.findByPackId(tableName, "22");
+		PayloadDto dto = null;
 		try {
+			dto = payloadService.findByPackId(tableName, "22");
 			LOG.info("PayloadDto : {}", Util.getInstance().toJSon(dto));
-		} catch (JsonProcessingException e) {
-			LOG.info("createTable : {}", e.getMessage());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		return dto;
 	}
@@ -92,7 +96,7 @@ public class TsetDynamoDB {
 		String tableName = "testTable";
 		String status = "";
 		try {
-			 status = dnTableService.deleteTable(tableName);
+			status = dnTableService.deleteTable(tableName);
 			LOG.info("deleteTable : {}", status);
 		} catch (InterruptedException e) {
 			LOG.info("deleteTable : {}", e.getMessage());
@@ -107,28 +111,41 @@ public class TsetDynamoDB {
 		return count;
 	}
 
+	@RequestMapping(value = "/getByToday", method = RequestMethod.POST)
+	public @ResponseBody List<PayloadDto> getPayloadDtoListByToday() {
+		String tableName = "testTable";
+		List<PayloadDto> dtos = null;
+		try {
+			dtos = payloadService.findPayloadDtoListByToday(tableName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return dtos;
+	}
+
 	/**
 	 * TEST DATA
-	 * 
 	 * 
 	 * @return
 	 */
 	private PayloadVo setTestPayloadVo(String packId) {
 
+		Calendar calendar = Calendar.getInstance();
 		Random random = new Random();
 		PayloadVo payloadVo = new PayloadVo();
 
-		payloadVo.setPackId(random.nextInt() + "ID");
+		payloadVo.setPackId(random.nextInt(100) + "ID");
 		if (packId != null) {
 			payloadVo.setPackId(packId);
 		}
-		payloadVo.setTimestamp(random.nextLong());
+		payloadVo.setTimestamp(calendar.getTimeInMillis());
 		payloadVo.setVoltage(random.nextDouble());
 		payloadVo.setCurrent(random.nextDouble());
-		payloadVo.setSoc(random.nextInt());
-		payloadVo.setSoh(random.nextInt());
-		payloadVo.setTemperature(random.nextInt());
-		payloadVo.setAlert(random.nextInt() + "test");
+		payloadVo.setSoc(random.nextInt(99));
+		payloadVo.setSoh(random.nextInt(99));
+		payloadVo.setTemperature(random.nextInt(99));
+		payloadVo.setAlert(random.nextInt(10) + "test");
 		payloadVo.setLatitude(random.nextDouble());
 		payloadVo.setLongitude(random.nextDouble());
 		payloadVo.setSpeed(random.nextInt());

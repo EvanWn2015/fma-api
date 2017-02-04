@@ -17,12 +17,13 @@
 <body>
 <div class="container">
 	<div class="starter-template">
-		<button type="button" class="btn btn-danger">Create</button>
-		<button type="button" class="btn btn-info">PutItem</button>
-		<button type="button" class="btn btn-default">PutItem2</button>
-		<button type="button" class="btn btn-primary">Get Count</button>
-		<button type="button" class="btn btn-success">Query</button>
-		<button type="button" class="btn btn-warning">DeleteTable</button>
+		<button type="button" class="btn btn-danger create">Create</button>
+		<button type="button" class="btn btn-info putItem">PutItem</button>
+		<button type="button" class="btn btn-default putItem2">PutItem2</button>
+		<button type="button" class="btn btn-primary getCount">Get Count</button>
+		<button type="button" class="btn btn-success query">Query</button>
+		<button type="button" class="btn btn-danger getByToDay">Get By ToDay</button>
+		<button type="button" class="btn btn-warning deleteTable">DeleteTable</button>
 	</div>
 </div>
 
@@ -32,30 +33,34 @@ $(function() {
 });
 
 function bindBtnEvent() {
-	$('.btn-danger').bind({
+	$('.create').bind({
 		click:createTable
 	});
 	
-	$('.btn-info').bind({
+	$('.putItem').bind({
 		click:putItem
 	})
 	
-	$('.btn-default').bind({
+	$('.putItem2').bind({
 		click:putItem2
 	})
 	
-	$('.btn-success').bind({
-		click:query
-	})
-	
-	$('.btn-warning').bind({
-		click:deleteTable
-	})
-	
-	$('.btn-primary').bind({
+	$('.getCount').bind({
 		click:getCount
 	})
 	
+	$('.query').bind({
+		click:query
+	})
+	
+	$('.getByToDay').bind({
+		click:getByToDay
+	})
+	
+	$('.deleteTable').bind({
+		click:deleteTable
+	})
+
 }
 
 
@@ -107,6 +112,19 @@ function query (){
         success: function(data){
             console.log(data);
             alert('query data : ' + data);
+        }
+    });
+}
+
+function getByToDay (){
+	console.log('..........getByToday.......');
+	$.ajax({
+        url: 'getByToday.do',
+        type:"POST",
+        dataType:'text',
+        success: function(data){
+            console.log(data);
+            alert('getByToday data : ' + data);
         }
     });
 }

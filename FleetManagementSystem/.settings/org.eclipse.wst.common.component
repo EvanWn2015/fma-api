@@ -8,6 +8,9 @@
         <dependent-module archiveName="fms-api2-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fms-api/fms-api">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="fms-common-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fms-common/fms-common">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/FleetManagementSystem/target/classes"/>
         <property name="context-root" value="FleetManagementSystem"/>
     </wb-module>

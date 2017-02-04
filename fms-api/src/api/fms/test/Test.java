@@ -20,7 +20,7 @@ public class Test {
 	
 		PayloadVo payloadVo = new PayloadVo("22");
 		try {
-			PayloadDao.getInstance().insert("testTable", payloadVo);
+			PayloadDao.getInstance().putItemBytableNameAndPayloaVo("testTable", payloadVo);
 		} catch (NullPointerException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
