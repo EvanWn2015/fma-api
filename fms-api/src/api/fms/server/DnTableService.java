@@ -34,8 +34,10 @@ public class DnTableService {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		if (!checkRepeatTable(tableName)) {
 			Table table = dynamoDB.createTable(tableName,
-					Arrays.asList(new KeySchemaElement(DNDBConstants.PACKID, KeyType.HASH)),
-					Arrays.asList(new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.S)),
+					Arrays.asList(new KeySchemaElement(DNDBConstants.PACKID, KeyType.HASH),
+							new KeySchemaElement(DNDBConstants.TIMESTAMP, KeyType.RANGE)),
+					Arrays.asList(new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.S),
+							new AttributeDefinition(DNDBConstants.TIMESTAMP, ScalarAttributeType.N)),
 					new ProvisionedThroughput(5L, 5L));
 			table.waitForActive();
 			return "success";
@@ -86,7 +88,7 @@ public class DnTableService {
 	}
 
 	/**
-	 * 取得全部 Table 
+	 * 取得全部 Table
 	 * 
 	 * @return ArrayList<String>
 	 */
@@ -111,7 +113,7 @@ public class DnTableService {
 	 */
 	public String deleteTable(String tableName) throws InterruptedException {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
-		if (checkRepeatTable(tableName)){
+		if (checkRepeatTable(tableName)) {
 			Table table = dynamoDB.getTable(tableName);
 			table.delete();
 			table.waitForDelete();
@@ -119,9 +121,10 @@ public class DnTableService {
 		}
 		return "fail";
 	}
-	
+
 	/**
 	 * 檢查是否有重複 Table
+	 * 
 	 * @param tableName
 	 * @return
 	 */
@@ -136,12 +139,11 @@ public class DnTableService {
 		}
 		return status;
 	}
-	
-	
-//	private String getTableStatus(String tableName){
-//		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
-//		TableDescription td = dynamoDB.getTable(tableName).describe();
-//		System.out.println(td.getTableName());
-//		return td.getTableStatus();
-//	}
+
+	// private String getTableStatus(String tableName){
+	// DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
+	// TableDescription td = dynamoDB.getTable(tableName).describe();
+	// System.out.println(td.getTableName());
+	// return td.getTableStatus();
+	// }
 }

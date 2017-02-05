@@ -49,43 +49,9 @@ public class PayloadDao {
 
 		table.putItem(item);
 	}
-
-	/**
-	 * 依時間範圍 Filter TIMESTAMP 資料 
-	 * @param tableName
-	 * @param startTime
-	 * @param endTime
-	 * @return
-	 */
-	public Iterator<Item> findItemIteratorByTimeRange(String tableName, Long startTime, Long endTime) {
-		System.out.println("startTime : " + startTime + "endTime : " + endTime);
-		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
-		Table table = dynamoDB.getTable(tableName);
-		
-		ValueMap valueMap = new ValueMap()
-				.withNumber(":start_tr", startTime)
-				.withNumber(":end_tr", endTime);
-		
-		ScanSpec scanSpec = new ScanSpec()
-				.withProjectionExpression(getProjectionExpression())
-				.withFilterExpression("#time_r between :start_tr and :end_tr")
-				.withNameMap(getNameMap())
-				.withValueMap(valueMap);
-
-		ItemCollection<ScanOutcome> items = null;
-		Iterator<Item> iterator = null;
-		try {
-			items = table.scan(scanSpec);
-			iterator = items.iterator();
-		} catch (Exception e) {
-			System.err.println("Unable to scan the table:");
-			System.err.println(e.getMessage());
-		}
-		return iterator;
-	}
 	
 	/**
-	 * 通用掃描條件
+	 * 掃描表所有符合條件的 Item
 	 * @param tableName 
 	 * @param filter ex:"#time_r < :start_tr"
 	 * @param valueMap ex: .withNumber(":start_tr", startTime) 
@@ -95,7 +61,7 @@ public class PayloadDao {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
 		
-		ScanSpec scanSpec = new ScanSpec()
+		ScanSpec spec = new ScanSpec()
 				.withProjectionExpression(getProjectionExpression())
 				.withFilterExpression(filter)
 				.withNameMap(getNameMap())
@@ -104,7 +70,7 @@ public class PayloadDao {
 		ItemCollection<ScanOutcome> items = null;
 		Iterator<Item> iterator = null;
 		try {
-			items = table.scan(scanSpec);
+			items = table.scan(spec);
 			iterator = items.iterator();
 		} catch (Exception e) {
 			System.err.println("Unable to scan the table:");
@@ -112,26 +78,37 @@ public class PayloadDao {
 		}
 		return iterator;
 	}
-
-	public Iterator<Item> findAllItemIterator(String tableName) {
-
+	
+	/**
+	 * 查询表所有符合條件的 Item
+	 * @param tableName
+	 * @param condition
+	 * @param valueMap
+	 * @return
+	 */
+	public Iterator<Item> queryItemIteratorByValueMapAndCondition(String tableName, String condition, ValueMap valueMap) {
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
-		QuerySpec querySpec = new QuerySpec();
+		
+		QuerySpec querySpec = new QuerySpec()
+				.withProjectionExpression(getProjectionExpression())
+				.withKeyConditionExpression(condition)
+				.withNameMap(getNameMap())
+				.withValueMap(valueMap)
+				.withConsistentRead(true);
 
 		ItemCollection<QueryOutcome> items = null;
 		Iterator<Item> iterator = null;
-
 		try {
 			items = table.query(querySpec);
 			iterator = items.iterator();
 		} catch (Exception e) {
-			System.err.println("Unable to query movies from 1985");
+			System.err.println("Unable to query the table:");
 			System.err.println(e.getMessage());
 		}
 		return iterator;
 	}
-
+	
 	public Item findItemByPackId(String tableName, String packId) {
 
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();

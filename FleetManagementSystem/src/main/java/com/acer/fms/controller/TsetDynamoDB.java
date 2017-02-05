@@ -83,7 +83,7 @@ public class TsetDynamoDB {
 		PayloadDto dto = null;
 		try {
 			dto = payloadService.findByPackId(tableName, "22");
-			LOG.info("PayloadDto : {}", Util.getInstance().toJSon(dto));
+			LOG.info("PayloadDto : {}", Util.toJSon(dto));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -116,7 +116,7 @@ public class TsetDynamoDB {
 		String tableName = "testTable";
 		List<PayloadDto> dtos = null;
 		try {
-			dtos = payloadService.findPayloadDtoListByToday(tableName);
+			dtos = payloadService.findPayloadDtoListByToday(tableName, "22");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
