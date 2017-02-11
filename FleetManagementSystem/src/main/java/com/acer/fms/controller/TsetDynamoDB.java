@@ -52,7 +52,7 @@ public class TsetDynamoDB {
 	@RequestMapping(value = "/putItem", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody String putItem() {
 		String tableName = "testTable";
-		PayloadVo payloadVo = setTestPayloadVo("22");
+		PayloadVo payloadVo = setTestPayloadVo(22);
 		String status = "fail";
 		try {
 			payloadService.insert(tableName, payloadVo);
@@ -66,7 +66,7 @@ public class TsetDynamoDB {
 	@RequestMapping(value = "/putItem2", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody String putItem2() {
 		String tableName = "testTable";
-		PayloadVo payloadVo = setTestPayloadVo(null);
+		PayloadVo payloadVo = setTestPayloadVo(0);
 		String status = "fail";
 		try {
 			payloadService.insert(tableName, payloadVo);
@@ -82,11 +82,11 @@ public class TsetDynamoDB {
 		String tableName = "testTable";
 		PayloadDto dto = null;
 		try {
-			dto = payloadService.findByPackId(tableName, "22");
+			dto = payloadService.findByPackId(tableName, 22);
 			LOG.info("PayloadDto : {}", Util.toJSon(dto));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOG.info("createTable : {}", e1.getMessage());
 		}
 		return dto;
 	}
@@ -116,7 +116,7 @@ public class TsetDynamoDB {
 		String tableName = "testTable";
 		List<PayloadDto> dtos = null;
 		try {
-			dtos = payloadService.findPayloadDtoListByToday(tableName, "22");
+			dtos = payloadService.findPayloadDtoListByToday(tableName, 22);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -129,14 +129,14 @@ public class TsetDynamoDB {
 	 * 
 	 * @return
 	 */
-	private PayloadVo setTestPayloadVo(String packId) {
+	private PayloadVo setTestPayloadVo(int packId) {
 
 		Calendar calendar = Calendar.getInstance();
 		Random random = new Random();
 		PayloadVo payloadVo = new PayloadVo();
 
-		payloadVo.setPackId(random.nextInt(100) + "ID");
-		if (packId != null) {
+		payloadVo.setPackId(random.nextInt(100));
+		if (packId != 0) {
 			payloadVo.setPackId(packId);
 		}
 		payloadVo.setTimestamp(calendar.getTimeInMillis());

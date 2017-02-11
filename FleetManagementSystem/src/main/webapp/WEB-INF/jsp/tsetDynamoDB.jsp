@@ -108,7 +108,7 @@ function query (){
 	$.ajax({
         url: 'query.do',
         type:"POST",
-        dataType: "json",
+        dataType: "text",
         success: function(data){
             console.log(data);
             alert('query data : ' + data);

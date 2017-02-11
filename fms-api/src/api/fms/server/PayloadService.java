@@ -34,7 +34,7 @@ public class PayloadService {
 	 * @return
 	 * @throws Exception
 	 */
-	public PayloadDto findByPackId(String tableName, String packId) throws Exception {
+	public PayloadDto findByPackId(String tableName, Integer packId) throws Exception {
 		Item item = PayloadDao.getInstance().findItemByPackId(tableName, packId);
 		PayloadDto dto = setPayloadDtoByItem(item);
 		return dto;
@@ -47,10 +47,10 @@ public class PayloadService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<PayloadDto> findPayloadDtoListByToday(String tableName, String packId) throws Exception {
+	public List<PayloadDto> findPayloadDtoListByToday(String tableName, Integer packId) throws Exception {
 
 		ValueMap valueMap = new ValueMap()
-				.withString(":v_id", packId)
+				.withNumber(":v_id", packId)
 				.withNumber(":v_start_t", Util.getStartTimeOfDay())
 				.withNumber(":v_end_t", Util.getEndTimeOfDay());
 
@@ -94,7 +94,7 @@ public class PayloadService {
 	 * @param tableName
 	 * @param packId
 	 */
-	public void deleteItemByPackId(String tableName, String packId) {
+	public void deleteItemByPackId(String tableName, Integer packId) {
 		PayloadDao.getInstance().deleteItemByPackId(tableName, packId);
 	}
 

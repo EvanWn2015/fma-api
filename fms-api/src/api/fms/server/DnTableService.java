@@ -36,7 +36,7 @@ public class DnTableService {
 			Table table = dynamoDB.createTable(tableName,
 					Arrays.asList(new KeySchemaElement(DNDBConstants.PACKID, KeyType.HASH),
 							new KeySchemaElement(DNDBConstants.TIMESTAMP, KeyType.RANGE)),
-					Arrays.asList(new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.S),
+					Arrays.asList(new AttributeDefinition(DNDBConstants.PACKID, ScalarAttributeType.N),
 							new AttributeDefinition(DNDBConstants.TIMESTAMP, ScalarAttributeType.N)),
 					new ProvisionedThroughput(5L, 5L));
 			table.waitForActive();

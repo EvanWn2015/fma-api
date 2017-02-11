@@ -1,5 +1,6 @@
 package api.fms.server;
 
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -22,10 +23,10 @@ public class DBconnect  {
 		// Cloud
 //		AmazonDynamoDBClient client = new AmazonDynamoDBClient(new ProfileCredentialsProvider());
 		// Local 
-		AmazonDynamoDBClient client = new AmazonDynamoDBClient().withEndpoint(DBURL);
+//		AmazonDynamoDBClient client = new AmazonDynamoDBClient().withEndpoint(DBURL);
 		
 		// This client will default to US West (Oregon)
-//		AmazonDynamoDBClient client = new AmazonDynamoDBClient().withRegion(Regions.US_WEST_2);
+		AmazonDynamoDBClient client = new AmazonDynamoDBClient().withRegion(Regions.US_WEST_2);
 
 		return new DynamoDB(client);
 	}

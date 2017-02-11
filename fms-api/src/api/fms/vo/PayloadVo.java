@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class PayloadVo implements Serializable {
 	private static final long serialVersionUID = -5370527696614210407L;
 
-	private String packId;
+	private Integer packId;
 	private Long timestamp;
 	private double voltage;
 	private double current;
@@ -21,15 +21,15 @@ public class PayloadVo implements Serializable {
 		
 	}
 
-	public PayloadVo(String packId) {
+	public PayloadVo(Integer packId) {
 		this.packId = packId;
 	}
 
-	public String getPackId() {
+	public Integer getPackId() {
 		return packId;
 	}
 
-	public void setPackId(String packId) {
+	public void setPackId(Integer packId) {
 		this.packId = packId;
 	}
 

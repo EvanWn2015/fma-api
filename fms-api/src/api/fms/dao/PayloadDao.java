@@ -109,17 +109,18 @@ public class PayloadDao {
 		return iterator;
 	}
 	
-	public Item findItemByPackId(String tableName, String packId) {
+	public Item findItemByPackId(String tableName, Integer packId) throws NullPointerException {
 
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);
-		GetItemSpec spec = new GetItemSpec().withPrimaryKey(DNDBConstants.PACKID, packId);
+		GetItemSpec spec = new GetItemSpec().withPrimaryKey(DNDBConstants.PACKID, packId, DNDBConstants.TIMESTAMP, 1486823679603L);
 
 		Item outcome = table.getItem(spec);
+		System.out.println(outcome);
 		return outcome;
 	}
 
-	public void deleteItemByPackId(String tableName, String packId) {
+	public void deleteItemByPackId(String tableName, Integer packId) {
 
 		DynamoDB dynamoDB = DBconnect.getInstance().getDynamoDB();
 		Table table = dynamoDB.getTable(tableName);

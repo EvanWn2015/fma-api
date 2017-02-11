@@ -6,7 +6,7 @@ public class PayloadDto implements Serializable {
 	private static final long serialVersionUID = -6679211119986134769L;
 	
 
-	private String packId;
+	private Integer packId;
 	private Long timestamp;
 	private double voltage;
 	private double current;
@@ -21,11 +21,11 @@ public class PayloadDto implements Serializable {
 	public PayloadDto() {
 	}
 	
-	public String getPackId() {
+	public Integer getPackId() {
 		return packId;
 	}
 
-	public void setPackId(String packId) {
+	public void setPackId(Integer packId) {
 		this.packId = packId;
 	}
 

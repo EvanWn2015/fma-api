@@ -18,7 +18,7 @@ public class Test {
 //		}
 		
 	
-		PayloadVo payloadVo = new PayloadVo("22");
+		PayloadVo payloadVo = new PayloadVo(22);
 		try {
 			PayloadDao.getInstance().putItemBytableNameAndPayloaVo("testTable", payloadVo);
 		} catch (NullPointerException | InterruptedException e) {
